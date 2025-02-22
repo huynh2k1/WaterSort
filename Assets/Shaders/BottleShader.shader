@@ -28,6 +28,8 @@ Shader "Unlit/Water"
                 "Queue" = "Transparent"
             }
             Blend One OneMinusSrcAlpha
+            Cull Off
+
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag

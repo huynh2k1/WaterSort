@@ -1,0 +1,29 @@
+Bottle
+
+
+Properties :
+- waters : mảng quản lý các màu nước trong lọ theo type
+- thresholdFills : mảng quản lí ngưỡng các màu nước
+
+Shader:
+- SetColor("_Color{i}", Color.?) : set color theo index
+- SetFloat("_FillAmount", ?): Set ngưỡng để hiển thị số lượng water
+- SetFloat("ScaleOffset", ?) : Set scale của mat khi xoay ống
+
+Function:
+- Init():
+	+ Cập nhật lại ngưỡng nước có trong lọ
+	+ Cập nhật màu
+
+- UpdateMat()			   : Cập nhật vị trí và scale của mat
+- UpdateColorWaterByThreshold()    : Cập nhật lại tất cả màu nước trong lọ theo {TYPE} 
+- SetCurThresholdWater() 	   : Set ngưỡng nước hiện tại còn lại trong lọ
+- SetColorWaterById()    	   : Set màu nước theo {id} 
+- GetIDHasWater() 	 	   : lấy ra cái {id} của phần tử nước có {TYPE} != none
+- GetIDNoWater()         	   : lấy ra {id} của phần tử nước {TYPE} == none
+- IsFull()			   : Kiểm tra lọ có slot trống hay không
+- IsNull()			   : Kiểm tra lọ có phải lọ rỗng hay không
+
+
+
+
