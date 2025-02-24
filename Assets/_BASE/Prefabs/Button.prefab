@@ -86,7 +86,6 @@ GameObject:
   - component: {fileID: 5397262704360231007}
   - component: {fileID: 3228184187698146241}
   - component: {fileID: 4337580488485996616}
-  - component: {fileID: 4817240512828126400}
   - component: {fileID: 8674850619679419179}
   m_Layer: 5
   m_Name: Button
@@ -153,7 +152,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4817240512828126400
+--- !u!114 &8674850619679419179
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,7 +161,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8180289769815771370}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e28bbdae3fc8b84ab41dd4ea31fcb3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -197,15 +196,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8674850619679419179
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8180289769815771370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e28bbdae3fc8b84ab41dd4ea31fcb3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _hasEffect: 0
+  _clickSound: 1
+  _pressing: 0
+  _delayBtn: 1
+  _canClick: 1
+  initScale: {x: 1, y: 1, z: 1}
