@@ -3,12 +3,13 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class UIHome : MonoBehaviour
+public class UIHome : BaseUI
 {
     public Button btnPlay, btnSetting;
 
     private void Awake()
     {
+        AssignOnClick(btnPlay, OnClickPlay);
         AssignOnClick(btnSetting, OnClickSetting);
     }
 
@@ -19,11 +20,13 @@ public class UIHome : MonoBehaviour
 
     void OnClickPlay()
     {
-
+        Hide();
+        UICtrl.I.ShowUIGame(true);
     }
 
     void OnClickSetting()
     {
-        PopupController.I.ShowSetting();
+        PopupCtrl.I.ShowSetting();
     }
+
 }

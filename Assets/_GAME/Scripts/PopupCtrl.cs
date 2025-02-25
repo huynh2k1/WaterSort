@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class PopupController : MonoBehaviour
+public class PopupCtrl : MonoBehaviour
 {
-    public static PopupController I;
+    public static PopupCtrl I;
     public PopupSetting puSetting;
 
     private void Awake()
