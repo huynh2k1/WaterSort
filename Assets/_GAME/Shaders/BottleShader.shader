@@ -27,8 +27,9 @@ Shader "Unlit/Water"
             {
                 "Queue" = "Transparent"
             }
-            Blend One OneMinusSrcAlpha
+            Blend SrcAlpha OneMinusSrcAlpha
             Cull Off
+            ZWrite Off
 
             CGPROGRAM
             #pragma vertex vert
@@ -88,6 +89,8 @@ Shader "Unlit/Water"
                 float4 c2 = lerp(_Color3, c1, s2);
                 float4 c3 = lerp(_Color4, c2, s3);
                 col = c3 * uv;
+                //col.a = uv;
+    
                 return col;
             }
             ENDCG

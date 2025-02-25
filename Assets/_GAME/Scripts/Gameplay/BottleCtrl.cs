@@ -3,12 +3,20 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using static UnityEditor.PlayerSettings;
 
 public class BottleCtrl : MonoBehaviour
 {
     public static BottleCtrl I;
 
+    public Bottle bottlePrefab;
     public List<Bottle> listBottle;
+    public int numBottle;
+    public int maxPerRow = 4;
+    public Vector2 offSet = new Vector2(-0.25f, 0.5f);
+    public float spaceX = 0.5f;
+    public float spaceY = 0.5f;
+
 
     public Bottle b1;
     public Bottle b2;
@@ -25,7 +33,7 @@ public class BottleCtrl : MonoBehaviour
 
     void Init()
     {
-        listBottle = transform.GetComponentsInChildren<Bottle>().ToList();
+        SpawnObjects();
     }
 
     public void B1ToB2()
@@ -111,4 +119,44 @@ public class BottleCtrl : MonoBehaviour
         b2 = null;
     }
 
+    #region SPAWN BOTTLE
+    void SpawnObjects()
+    {
+        int numRow = (numBottle + maxPerRow)/ maxPerRow;
+        Debug.Log("Số hàng: " + numRow);
+
+        float totalHeight = (numRow - 1) * spaceY;
+        float totalWidth;
+        float startX;
+        float startY = -totalHeight / 2;
+        float bottlePerRow;
+        for (int i = 0; i < numRow; i++)
+        {
+            if(numBottle - i * maxPerRow >= 4)
+            {
+                bottlePerRow = 4;
+                totalWidth = (maxPerRow - 1) * spaceX;
+                startX = -totalWidth / 2;
+            }
+            else
+            {
+                totalWidth = ((numBottle - i * maxPerRow) - 1) * spaceX;
+                bottlePerRow = numBottle - i * maxPerRow;
+                startX = -totalWidth / 2;
+            }
+            for(int j = 0; j < bottlePerRow; j++)
+            {
+                float x = startX + j * spaceX;
+                float y = startY + i * spaceY;
+
+                Vector2 pos = new Vector2(x + offSet.x, y + offSet.y);
+                Bottle bottle = Instantiate(bottlePrefab, transform, false);
+                bottle.transform.position = pos;
+                listBottle.Add(bottle);
+
+            }
+        }
+    }
+
+    #endregion
 }

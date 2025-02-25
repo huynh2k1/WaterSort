@@ -20,7 +20,7 @@ public class Popup : MonoBehaviour
 
         main.localScale = Vector3.one * 0.67f;
 
-        main.DOScale(1, 0.33f).SetEase(Ease.OutBounce).OnComplete(() =>
+        main.DOScale(1, 0.2f).SetEase(Ease.OutBounce).OnComplete(() =>
         {
             DOVirtual.DelayedCall(1f, () =>
             {
