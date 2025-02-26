@@ -4,6 +4,7 @@ public class PopupCtrl : MonoBehaviour
 {
     public static PopupCtrl I;
     public PopupSetting puSetting;
+    public PopupWin puWin;
 
     private void Awake()
     {
@@ -13,5 +14,10 @@ public class PopupCtrl : MonoBehaviour
     public void ShowSetting()
     {
         puSetting.Show();
+    }
+
+    public void ShowWin()
+    {
+        puWin.Show();   
     }
 }

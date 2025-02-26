@@ -22,6 +22,7 @@ public class UIHome : BaseUI
     {
         Hide();
         UICtrl.I.ShowUIGame(true);
+        GameCtrl.I.GameStart();
     }
 
     void OnClickSetting()

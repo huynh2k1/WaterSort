@@ -10,13 +10,15 @@ public class BottleCtrl : MonoBehaviour
     public static BottleCtrl I;
 
     public Bottle bottlePrefab;
-    public List<Bottle> listBottle;
-    public int numBottle;
-    public int maxPerRow = 4;
+    public List<Bottle> listBottle = new List<Bottle>();
+    [Header("LEVEL DATA")]
+    public List<LevelSO> levelSOs;
+
+    [Header("GRID CONFIG")]
     public Vector2 offSet = new Vector2(-0.25f, 0.5f);
+    public int maxPerRow = 4;
     public float spaceX = 0.5f;
     public float spaceY = 0.5f;
-
 
     public Bottle b1;
     public Bottle b2;
@@ -26,14 +28,10 @@ public class BottleCtrl : MonoBehaviour
         I = this;
     }
 
-    private void Start()
-    {
-        Init();
-    }
-
-    void Init()
+    public void Init()
     {
         SpawnObjects();
+        LoadData();
     }
 
     public void B1ToB2()
@@ -78,7 +76,7 @@ public class BottleCtrl : MonoBehaviour
                 {
                     if (IsWin())
                     {
-                        Debug.Log("YOU WIN");
+                        GameCtrl.I.GameWin();
                     }
                 });
             },
@@ -122,8 +120,9 @@ public class BottleCtrl : MonoBehaviour
     #region SPAWN BOTTLE
     void SpawnObjects()
     {
+        int numBottle = levelSOs[PrefData.CurLevel].listBottle.Count;
+
         int numRow = (numBottle + maxPerRow)/ maxPerRow;
-        Debug.Log("Số hàng: " + numRow);
 
         float totalHeight = (numRow - 1) * spaceY;
         float totalWidth;
@@ -150,13 +149,31 @@ public class BottleCtrl : MonoBehaviour
                 float y = startY + i * spaceY;
 
                 Vector2 pos = new Vector2(x + offSet.x, y + offSet.y);
-                Bottle bottle = Instantiate(bottlePrefab, transform, false);
+                GameObject bottle = MyPoolManager.I.GetFromPool(bottlePrefab.gameObject);
                 bottle.transform.position = pos;
-                listBottle.Add(bottle);
-
+                listBottle.Add(bottle.GetComponent<Bottle>());
             }
         }
     }
 
+    void LoadData()
+    {
+        for(int i = 0; i < listBottle.Count; i++)
+        {
+            TypeWater[] waters = levelSOs[PrefData.CurLevel].listBottle[i].waters;
+            listBottle[i].LoadData(waters);
+        }
+    }
+
+    public void DisableBottles()
+    {
+        if (listBottle.Count <= 0)
+            return;
+        for(int i = 0; i < listBottle.Count; i++)
+        {
+            listBottle[i].gameObject.SetActive(false);
+        }
+        listBottle.Clear();
+    }
     #endregion
 }

@@ -26,9 +26,9 @@ public class Bottle : MonoBehaviour
     private Vector3 _initPos;
     private bool _canClick = true;
     float _scaleOffset = 1f;
+    float _curScale;
 
-
-    private void Start()
+    private void Awake()
     {
         Init();
     }
@@ -60,6 +60,9 @@ public class Bottle : MonoBehaviour
     //TH2: b1 = this
     private void OnMouseDown()
     {
+        if (GameCtrl.I.CurState() != StateGame.PLAYING)
+            return;
+
         if (!_canClick) return;
 
         if (BottleCtrl.I.b1 == null)
@@ -98,8 +101,21 @@ public class Bottle : MonoBehaviour
             _waterMat = _bottleIn.material;
         }
         _initPos = transform.position;
+    }
+
+    public void LoadData(TypeWater[] data)
+    {
+        UpdateTypeWaters(data);
         SetCurFillWater();
         UpdateColorWaterByThreshold(idCurFill);
+    }
+
+    public void UpdateTypeWaters(TypeWater[] data)
+    {
+        for(int i = 0; i < data.Length; i++)
+        {
+            waters[i] = data[i];
+        }
     }
 
     public int CountTopSameType()
@@ -180,6 +196,7 @@ public class Bottle : MonoBehaviour
             }
         }
     }
+
     public bool IsBottleComplete()
     {
         TypeWater typeTop = waters[waters.Length - 1];
@@ -193,31 +210,6 @@ public class Bottle : MonoBehaviour
         }
         return true;
     }
-
-    //IEnumerator DoNuoc()
-    //{
-    //    float t = 0;
-    //    float lerpValue;
-    //    float angleValue;
-
-    //    while(t < time)
-    //    {
-    //        lerpValue = t / time;
-    //        angleValue = Mathf.Lerp(0f, 90f, lerpValue);
-    //        _scaleOffset = Mathf.Lerp(1f, 0.5f, lerpValue);
-    //        transform.eulerAngles = new Vector3(0, 0, angleValue);
-    //        _waterMat.SetFloat("_ScaleOffset", _scaleOffset);
-    //        _waterMat.SetFloat("_FillAmount", _animationCurve.Evaluate(angleValue));
-    //        t += Time.deltaTime;
-
-    //        yield return new WaitForEndOfFrame();
-    //    }
-    //    angleValue = 90f;
-    //    transform.eulerAngles = new Vector3(0, 0, angleValue);
-    //    _waterMat.SetFloat("_ScaleOffset", _scaleOffset);
-    //    _waterMat.SetFloat("_FillAmount", _animationCurve.Evaluate(angleValue));
-
-    //}
 
     void UpdateColorWaterByThreshold(int threshold)
     {
@@ -238,6 +230,12 @@ public class Bottle : MonoBehaviour
                     break;
                 case TypeWater.YELLOW:
                     SetColorWaterById(i, data.colors[3]);
+                    break;
+                case TypeWater.PURPLE:
+                    SetColorWaterById(i, data.colors[4]);
+                    break;
+                case TypeWater.ORANGE:
+                    SetColorWaterById(i, data.colors[5]);
                     break;
             }
         }
@@ -299,7 +297,6 @@ public class Bottle : MonoBehaviour
                 }
             });
     }
-    float curScale;
 
     public void TweenBottle(Bottle target, int idRotate, float timeFill, Action action1, Action action2)
     {
@@ -328,12 +325,12 @@ public class Bottle : MonoBehaviour
         s.Join(DOTween.To(() => 1f, x => _scaleOffset = x, scale1, timeMove).OnUpdate(() =>
         {
             _waterMat.SetFloat("_ScaleOffset", _scaleOffset);
-        }).OnComplete(() => { curScale = _scaleOffset; }));
+        }).OnComplete(() => { _curScale = _scaleOffset; }));
         s.Join(transform.DORotate(angleTarget, timeMove).OnComplete(() => action1?.Invoke()));
 
         //Bắt đầu đổ
         s.Append(transform.DORotate(angleFill, timeFill));
-        s.Join(DOTween.To(() => curScale, x => _scaleOffset = x, scale2, timeFill).OnUpdate(() =>
+        s.Join(DOTween.To(() => _curScale, x => _scaleOffset = x, scale2, timeFill).OnUpdate(() =>
         {
             _waterMat.SetFloat("_ScaleOffset", _scaleOffset);
         }));
@@ -400,4 +397,12 @@ public class Bottle : MonoBehaviour
     public float GetScaleX() => transform.localScale.x;
 }
 
-public enum TypeWater { NONE, RED, GREEN, BLUE, YELLOW }
+public enum TypeWater {
+    NONE,
+    RED,
+    GREEN,
+    BLUE,
+    YELLOW,
+    PURPLE,
+    ORANGE
+}

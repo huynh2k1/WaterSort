@@ -11,12 +11,7 @@ public class UICtrl : MonoBehaviour
         I = this;
     }
 
-    private void Start()
-    {
-        Init();
-    }
-
-    void Init()
+    public void Init()
     {
         ShowUIHome(true);
         ShowUIGame(false);
@@ -46,5 +41,4 @@ public class UICtrl : MonoBehaviour
         }
     }
 
-   
 }

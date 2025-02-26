@@ -49,6 +49,7 @@ public class SoundObj : MonoBehaviour
                 break;
             case TypeSetting.MUSIC:
                 PrefData.Music = isOn;
+                SoundCtrl.I.CheckMusic();
                 break;
             case TypeSetting.VIBRATE:
                 PrefData.Vibrate = isOn;

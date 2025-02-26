@@ -33,6 +33,7 @@ public class UIGame : BaseUI
     void OnClickSetting()
     {
         PopupCtrl.I.ShowSetting();
+        GameCtrl.I.GamePause(true);
     }
 
     void UpdateTxtLevel()

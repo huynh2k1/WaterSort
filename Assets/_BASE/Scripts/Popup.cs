@@ -4,33 +4,52 @@ using UnityEngine.UI;
 
 public class Popup : MonoBehaviour
 {
-    public Transform main;
-    public ButtonEffect btnClose; 
-
-    private void Awake()
+    public ButtonEffect btnClose;
+    public CanvasGroup mainGroup;
+    public virtual void Awake()
     {
-        if (btnClose)
+        if (btnClose != null)
             btnClose.onClick.AddListener(Hide);
     }
 
     public virtual void Show()
     {
-        gameObject.SetActive(true);
-        btnClose.gameObject.SetActive(false);
-
-        main.localScale = Vector3.one * 0.67f;
-
-        main.DOScale(1, 0.2f).SetEase(Ease.OutBounce).OnComplete(() =>
+        if (btnClose)
         {
+            btnClose.Hide();
+        }
+        mainGroup.interactable = false;
+        mainGroup.transform.localScale = Vector3.one * 0.67f;
+        gameObject.SetActive(true);
+
+        mainGroup.transform.DOScale(1, 0.2f).SetEase(Ease.OutBounce).OnComplete(() =>
+        {
+            mainGroup.interactable = true;
             DOVirtual.DelayedCall(1f, () =>
             {
-                btnClose.gameObject.SetActive(true);
+                if(btnClose)
+                    btnClose.Show();
             });
         });
     }
 
     public virtual void Hide()
     {
-        gameObject.SetActive(false);
+        mainGroup.transform.DOKill();
+        mainGroup.interactable = false;
+        mainGroup.transform.localScale = Vector3.one;
+        mainGroup.transform.DOScale(1.1f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+        {
+            mainGroup.transform.DOScale(Vector3.one * 0.67f, 0.1f).OnComplete(() =>
+            {
+                gameObject.SetActive(false);
+            });
+        });
+    }
+
+    public virtual void OnClickClose()
+    {
+        btnClose.Hide();
+        Hide();
     }
 }
