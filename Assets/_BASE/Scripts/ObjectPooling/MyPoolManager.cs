@@ -5,6 +5,8 @@ public class MyPoolManager : MonoBehaviour
 {
     public static MyPoolManager I;
     private Dictionary<GameObject, MyPool> dicPools = new Dictionary<GameObject, MyPool>();
+
+
     private void Awake()
     {
         I = this;

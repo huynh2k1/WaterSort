@@ -15,6 +15,7 @@ public class Bottle : MonoBehaviour
     [SerializeField] Transform _bottleOut;
     [SerializeField] Transform _mask;
     [SerializeField] Transform _posTarget;
+    [SerializeField] Transform _posBottom;
     [SerializeField] SpriteRenderer _bottleIn;
     [SerializeField] AnimationCurve _animationCurve;
 
@@ -37,27 +38,7 @@ public class Bottle : MonoBehaviour
     {
         UpdateMat();
     }
-    //void DoNuoc()
-    //{
-    //    transform.DOKill();
-    //    transform.eulerAngles = Vector3.zero;
-    //    Vector3 angle = new Vector3(0, 0, 90);
-    //    transform.DORotate(angle, time, RotateMode.FastBeyond360).OnUpdate(() =>
-    //    {
-    //        if (transform.eulerAngles.z >= 30f && transform.eulerAngles.z < 31f) // Kiểm tra khoảng nhỏ để tránh gọi nhiều lần
-    //        {
-    //            Debug.Log("Góc đạt 30 độ!");
-    //            // Thực hiện hành động mong muốn
-    //            DOTween.To(() => 0.34f, x => _waterMat.SetFloat("_FillAmount", x), -0.5f, time);
-    //        }
-    //    });
-    //    DOTween.To(() => 1f, x => _scaleOffset = x, 0.5f, time);
-    //    DOTween.To(() => 1f, x => _waterMat.SetFloat("_ScaleOffset", x), 0.5f, time);
 
-    //}
-    //Nếu b1 chưa có => b1 = this
-    //Nếu b1 có : TH1: b2 chưa có -> b2 = this -> kiểm tra
-    //TH2: b1 = this
     private void OnMouseDown()
     {
         if (GameCtrl.I.CurState() != StateGame.PLAYING)
@@ -105,6 +86,7 @@ public class Bottle : MonoBehaviour
 
     public void LoadData(TypeWater[] data)
     {
+        _bottleIn.gameObject.SetActive(true);
         UpdateTypeWaters(data);
         SetCurFillWater();
         UpdateColorWaterByThreshold(idCurFill);
@@ -395,6 +377,8 @@ public class Bottle : MonoBehaviour
     public Vector2 GetPosTarget() => _posTarget.position;
 
     public float GetScaleX() => transform.localScale.x;
+
+    public Vector2 GetPosBottom() => _posBottom.position;
 }
 
 public enum TypeWater {
