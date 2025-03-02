@@ -211,23 +211,35 @@ public class BottleCtrl : MonoBehaviour
             case TypeWater.NONE:
                 color = bottleSO.colors[0];
                 break;
-            case TypeWater.RED:
+            case TypeWater.C0:
                 color = bottleSO.colors[0];
                 break;
-            case TypeWater.GREEN:
+            case TypeWater.C1:
                 color = bottleSO.colors[1];
                 break;
-            case TypeWater.BLUE:
+            case TypeWater.C2:
                 color = bottleSO.colors[2];
                 break;
-            case TypeWater.YELLOW:
+            case TypeWater.C3:
                 color = bottleSO.colors[3];
                 break;
-            case TypeWater.PURPLE:
+            case TypeWater.C4:
                 color = bottleSO.colors[4];
                 break;
-            case TypeWater.ORANGE:
+            case TypeWater.C5:
                 color = bottleSO.colors[5];
+                break;
+            case TypeWater.C6:
+                color = bottleSO.colors[6];
+                break;
+            case TypeWater.C7:
+                color = bottleSO.colors[7];
+                break;
+            case TypeWater.C8:
+                color = bottleSO.colors[8];
+                break;
+            case TypeWater.C9:
+                color = bottleSO.colors[9];
                 break;
         }
         return color;
