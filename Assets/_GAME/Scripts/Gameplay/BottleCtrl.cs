@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using static UnityEditor.PlayerSettings;
+using DG.Tweening;
 
 public class BottleCtrl : MonoBehaviour
 {
     public static BottleCtrl I;
 
+    public BottleSO bottleSO;
     public Bottle bottlePrefab;
     public List<Bottle> listBottle = new List<Bottle>();
     [Header("LEVEL DATA")]
@@ -72,6 +74,7 @@ public class BottleCtrl : MonoBehaviour
             b1.TweenBottle(b2, b1.idCurFill - sum, timeFill, () =>
             {
                 b1.ReduceWater(sum, timeFill);
+                SpawnLine(t1, b1, b2, timeFill);
                 b2.ReFill(sum, timeFill,t1, () =>
                 {
                     if (IsWin())
@@ -173,6 +176,61 @@ public class BottleCtrl : MonoBehaviour
             listBottle[i].gameObject.SetActive(false);
         }
         listBottle.Clear();
+    }
+
+    public LineRenderer lineRenderer;
+
+    public void SpawnLine(TypeWater type, Bottle b1, Bottle b2, float time)
+    {
+        GameObject lineObj = MyPoolManager.I.GetFromPool(lineRenderer.gameObject);
+        LineRenderer line = lineObj.GetComponent<LineRenderer>();
+        Color color = ConvertTypeToColor(type);
+        line.SetColors(color, color);
+        line.SetWidth(0.02f, 0.02f);
+        while(line.positionCount < 1)
+        {
+            line.positionCount++;
+        }
+        line.SetPosition(0, b1.GetPos());
+        line.SetPosition(1, b1.GetPos());
+
+        DOTween.To(() => b1.GetPos(), x => line.SetPosition(1, x), b2.GetPosBottom(), 0.02f).OnComplete(() =>
+        {
+            DOTween.To(() => b1.GetPos(), x => line.SetPosition(0, x), b2.GetPosBottom(), 0f).SetDelay(time).OnComplete(() =>
+            {
+                lineObj.SetActive(false);
+            });
+        });
+    }
+
+    public Color ConvertTypeToColor(TypeWater type)
+    {
+        Color color = new Color();
+        switch (type)
+        {
+            case TypeWater.NONE:
+                color = bottleSO.colors[0];
+                break;
+            case TypeWater.RED:
+                color = bottleSO.colors[0];
+                break;
+            case TypeWater.GREEN:
+                color = bottleSO.colors[1];
+                break;
+            case TypeWater.BLUE:
+                color = bottleSO.colors[2];
+                break;
+            case TypeWater.YELLOW:
+                color = bottleSO.colors[3];
+                break;
+            case TypeWater.PURPLE:
+                color = bottleSO.colors[4];
+                break;
+            case TypeWater.ORANGE:
+                color = bottleSO.colors[5];
+                break;
+        }
+        return color;
     }
     #endregion
 }
