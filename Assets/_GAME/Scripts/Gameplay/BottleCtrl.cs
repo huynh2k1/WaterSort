@@ -37,11 +37,11 @@ public class BottleCtrl : MonoBehaviour
     public void B1ToB2()
     {
         //Check xem có cùng màu nước trên cùng
-        TypeWater t1 = b1.waters[b1.GetIDHasWater()];
+        TypeWater t1 = b1.waters[b1.GetIDTopWater()];
         TypeWater t2 = TypeWater.NONE;
 
         if(b2.IsNull() == false)
-            t2 = b2.waters[b2.GetIDHasWater()];
+            t2 = b2.waters[b2.GetIDTopWater()];
 
         if (t2 != TypeWater.NONE && t1 != t2)
         {
@@ -122,7 +122,7 @@ public class BottleCtrl : MonoBehaviour
     {
         int numBottle = levelSOs[PrefData.CurLevel].listBottle.Count;
 
-        int numRow = (numBottle + maxPerRow)/ maxPerRow;
+        int numRow = (numBottle + maxPerRow - 1)/ maxPerRow;
 
         float totalHeight = (numRow - 1) * spaceY;
         float totalWidth;
@@ -135,14 +135,13 @@ public class BottleCtrl : MonoBehaviour
             {
                 bottlePerRow = 4;
                 totalWidth = (maxPerRow - 1) * spaceX;
-                startX = -totalWidth / 2;
             }
             else
             {
                 totalWidth = ((numBottle - i * maxPerRow) - 1) * spaceX;
                 bottlePerRow = numBottle - i * maxPerRow;
-                startX = -totalWidth / 2;
             }
+            startX = -totalWidth / 2;
             for(int j = 0; j < bottlePerRow; j++)
             {
                 float x = startX + j * spaceX;

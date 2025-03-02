@@ -23,10 +23,10 @@ public class Bottle : MonoBehaviour
 
     [Header("PROPERTIES")]
     public int idCurFill;
-    private Vector3 _initPos;
-    private bool _canClick = true;
+    Vector3 _initPos;
     float _scaleOffset = 1f;
     float _curScale;
+    bool _canClick = true;
 
     private void Awake()
     {
@@ -60,24 +60,26 @@ public class Bottle : MonoBehaviour
     //TH2: b1 = this
     private void OnMouseDown()
     {
-        if (GameCtrl.I.CurState() != StateGame.PLAYING)
+        if (GameCtrl.I != null && GameCtrl.I.CurState() != StateGame.PLAYING)
             return;
 
         if (!_canClick) return;
 
-        if (BottleCtrl.I.b1 == null)
+        BottleCtrl bottleCtrl = BottleCtrl.I;
+
+        if (bottleCtrl.b1 == null)
         {
             if (this.IsNull())
             {
                 return;
             }
-            BottleCtrl.I.b1 = this;
+            bottleCtrl.b1 = this;
         }
-        else if (BottleCtrl.I.b2 == null)
+        else if (bottleCtrl.b2 == null)
         {
-            if (BottleCtrl.I.b1 == this)
+            if (bottleCtrl.b1 == this)
             {
-                BottleCtrl.I.b1 = null;
+                bottleCtrl.b1 = null;
             }
             else
             {
@@ -86,9 +88,9 @@ public class Bottle : MonoBehaviour
                     return;
                 }
 
-                BottleCtrl.I.b2 = this;
+                bottleCtrl.b2 = this;
 
-                BottleCtrl.I.B1ToB2();
+                bottleCtrl.B1ToB2();
             }
         }
         //DoNuoc();
@@ -105,23 +107,28 @@ public class Bottle : MonoBehaviour
 
     public void LoadData(TypeWater[] data)
     {
-        UpdateTypeWaters(data);
+        UpdateTypeAllWaters(data);
         SetCurFillWater();
-        UpdateColorWaterByThreshold(idCurFill);
+        UpdateColorWaterByThreshold();
     }
 
-    public void UpdateTypeWaters(TypeWater[] data)
+    public void UpdateTypeAllWaters(TypeWater[] data)
     {
         for(int i = 0; i < data.Length; i++)
         {
-            waters[i] = data[i];
+            UpdateTypeWaterByID(i, data[i]);
         }
+    }
+
+    public void UpdateTypeWaterByID(int id, TypeWater type)
+    {
+        waters[id] = type;
     }
 
     public int CountTopSameType()
     {
         int count = 0;
-        int topID = GetIDHasWater();
+        int topID = GetIDTopWater();
         TypeWater typeTop = waters[topID];
 
         for (int i = topID; i >= 0; i--)
@@ -211,31 +218,43 @@ public class Bottle : MonoBehaviour
         return true;
     }
 
-    void UpdateColorWaterByThreshold(int threshold)
+    public void UpdateColorWaterByThreshold()
     {
-        for (int i = 0; i < threshold; i++)
+        for (int i = 0; i < idCurFill; i++)
         {
             switch (waters[i])
             {
                 case TypeWater.NONE:
                     break;
-                case TypeWater.RED:
+                case TypeWater.C0:
                     SetColorWaterById(i, data.colors[0]);
                     break;
-                case TypeWater.GREEN:
+                case TypeWater.C1:
                     SetColorWaterById(i, data.colors[1]);
                     break;
-                case TypeWater.BLUE:
+                case TypeWater.C2:
                     SetColorWaterById(i, data.colors[2]);
                     break;
-                case TypeWater.YELLOW:
+                case TypeWater.C3:
                     SetColorWaterById(i, data.colors[3]);
                     break;
-                case TypeWater.PURPLE:
+                case TypeWater.C4:
                     SetColorWaterById(i, data.colors[4]);
                     break;
-                case TypeWater.ORANGE:
+                case TypeWater.C5:
                     SetColorWaterById(i, data.colors[5]);
+                    break;
+                case TypeWater.C6:
+                    SetColorWaterById(i, data.colors[6]);
+                    break;
+                case TypeWater.C7:
+                    SetColorWaterById(i, data.colors[7]);
+                    break;
+                case TypeWater.C8:
+                    SetColorWaterById(i, data.colors[8]);
+                    break;
+                case TypeWater.C9:
+                    SetColorWaterById(i, data.colors[9]);
                     break;
             }
         }
@@ -263,7 +282,8 @@ public class Bottle : MonoBehaviour
         {
             waters[i] = type;
         }
-        UpdateColorWaterByThreshold(sumFill);
+        idCurFill = sumFill;
+        UpdateColorWaterByThreshold();
 
         float prevFill = data.thresholdFills[idCurFill];
         float curFill = data.thresholdFills[sumFill];
@@ -345,17 +365,25 @@ public class Bottle : MonoBehaviour
         s.SetEase(Ease.Linear);
     }
 
-    public int GetIDHasWater()
+    public int GetIDTopWater()
     {
-        for (int i = 0; i < waters.Length; i++)
+        for (int i = waters.Length - 1; i >= 0; i--)
         {
-            if (waters[i] == TypeWater.NONE)
+            if (waters[i] != TypeWater.NONE)
             {
-                if (i == 0) return -1;
-                else return i - 1;
+                return i;
             }
         }
-        return waters.Length - 1;
+        //for (int i = 0; i < waters.Length; i++)
+        //{
+        //    if (waters[i] == TypeWater.NONE)
+        //    {
+        //        if (i == 0) return -1;
+        //        else return i - 1;
+        //    }
+        //}
+        //return waters.Length - 1;
+        return -1;
     }
 
     public int GetIDNoWater()
@@ -373,7 +401,7 @@ public class Bottle : MonoBehaviour
     //Kiểm tra lọ đã đầy hay chưa
     public bool IsFull()
     {
-        if (GetIDHasWater() < waters.Length - 1)
+        if (GetIDTopWater() < waters.Length - 1)
         {
             return false;
         }
@@ -399,10 +427,14 @@ public class Bottle : MonoBehaviour
 
 public enum TypeWater {
     NONE,
-    RED,
-    GREEN,
-    BLUE,
-    YELLOW,
-    PURPLE,
-    ORANGE
+    C0,
+    C1,
+    C2,
+    C3,
+    C4,
+    C5,
+    C6,
+    C7,
+    C8,
+    C9
 }
