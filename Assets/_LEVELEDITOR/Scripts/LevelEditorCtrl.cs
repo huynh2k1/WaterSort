@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
@@ -8,12 +9,14 @@ public class LevelEditorCtrl : MonoBehaviour
     public List<Bottle> listBottle;
     public Bottle btlPrefab;
     public BottleSO data;
+    string _filePath;
 
     [Header("Bottle To Shuffle")]
     public Bottle b1;
     public Bottle b2;
 
     [Header("PROPERTIES")]
+    public float time;
     float numRow;
     float colPerRow;
     float startX;
@@ -39,6 +42,11 @@ public class LevelEditorCtrl : MonoBehaviour
         {
             ShuffleBottles();
         }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            SaveToJson(ConvertToLevelData());
+        }
     }
 
     public void InitLevel()
@@ -46,6 +54,18 @@ public class LevelEditorCtrl : MonoBehaviour
         DisableBottles();
         SpawnBottles(numBottle);
         InitColor();
+    }
+
+
+    void DisableBottles()
+    {
+        if (listBottle.Count <= 0)
+            return;
+        for (int i = 0; i < listBottle.Count; i++)
+        {
+            listBottle[i].gameObject.SetActive(false);
+        }
+        listBottle.Clear();
     }
 
     public void ShuffleBottles()
@@ -61,17 +81,6 @@ public class LevelEditorCtrl : MonoBehaviour
 
         b1.ReduceWater(numWaterShuffle, 0);
         b2.ReFill(numWaterShuffle, 0, type, () => { });
-    }
-
-    void DisableBottles()
-    {
-        if (listBottle.Count <= 0)
-            return;
-        for (int i = 0; i < listBottle.Count; i++)
-        {
-            listBottle[i].gameObject.SetActive(false);
-        }
-        listBottle.Clear();
     }
 
     //Tạo ra các bottle
@@ -178,4 +187,38 @@ public class LevelEditorCtrl : MonoBehaviour
         return temp[id];
     }
 
+    public LevelData ConvertToLevelData()
+    {
+        LevelData levelData = new LevelData();
+        levelData.time = time;
+        levelData.listBottle = new List<BottleData>();
+
+        foreach (var bottle in listBottle)
+        {
+            levelData.listBottle.Add(new BottleData { waters = bottle.waters });
+        }
+
+        for (int i = 0; i < listBottle.Count; i++)
+        {
+            for(int j = 0; j  < listBottle[i].waters.Length; j++)
+            {
+                levelData.listBottle[i].waters[j] = listBottle[i].waters[j];
+            }
+
+        }
+        return levelData;
+    }
+
+    void SaveToJson(LevelData level)
+    {
+        string pathSave = Path.Combine(Application.streamingAssetsPath, "Levels");
+
+        if (!Directory.Exists(pathSave))
+        {
+            Directory.CreateDirectory(pathSave);
+        }
+        _filePath = Path.Combine(pathSave, $"Level {1}.json");
+        string json = JsonUtility.ToJson(level, true);
+        File.WriteAllText(_filePath, json);
+    }
 }
