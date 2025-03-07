@@ -1,13 +1,23 @@
 using DG.Tweening;
+using System;
 using UnityEngine;
 
 public class GameCtrl : BaseGameCtrl
 {
-    public static GameCtrl I;
+    public static GameCtrl I { get; private set; }
+
+    public static event Action OnGameStart;
 
     private void Awake()
     {
-        I = this;
+        if(I = null)
+        {
+            I = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Start()
@@ -32,9 +42,10 @@ public class GameCtrl : BaseGameCtrl
 
     public override void GameStart()
     {
-        BottleCtrl.I.DisableBottles();
         ChangeState(StateGame.PLAYING);
-        BottleCtrl.I.Init();
+        OnGameStart?.Invoke();
+        //BottleCtrl.I.DisableBottles();
+        //BottleCtrl.I.Init();
     }
 
     public override void GamePause(bool isPause)

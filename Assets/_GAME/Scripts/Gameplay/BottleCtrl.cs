@@ -30,8 +30,14 @@ public class BottleCtrl : MonoBehaviour
         I = this;
     }
 
+    private void Start()
+    {
+        GameCtrl.OnGameStart += Init;
+    }
+
     public void Init()
     {
+        DisableBottles();
         SpawnObjects();
         LoadData();
     }
