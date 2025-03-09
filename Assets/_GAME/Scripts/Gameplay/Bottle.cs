@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bottle : MonoBehaviour
+public class Bottle : MonoBehaviour, IBottle
 {
     public Stack<TypeWater> typeWaters;
     public TypeWater[] waters;
@@ -45,36 +45,64 @@ public class Bottle : MonoBehaviour
             return;
 
         if (!_canClick) return;
+        InputCtrl.I.SelectBottle(this);
+    }
 
-        BottleCtrl bottleCtrl = BottleCtrl.I;
-
-        if (bottleCtrl.b1 == null)
+    public int GetIDTopWater()
+    {
+        for (int i = waters.Length - 1; i >= 0; i--)
         {
-            if (this.IsNull())
+            if (waters[i] != TypeWater.NONE)
             {
-                return;
-            }
-            bottleCtrl.b1 = this;
-        }
-        else if (bottleCtrl.b2 == null)
-        {
-            if (bottleCtrl.b1 == this)
-            {
-                bottleCtrl.b1 = null;
-            }
-            else
-            {
-                if (this.IsFull() == true)
-                {
-                    return;
-                }
-
-                bottleCtrl.b2 = this;
-
-                bottleCtrl.B1ToB2();
+                return i;
             }
         }
-        //DoNuoc();
+        return -1;
+    }
+
+    public int GetIDTopEmpty()
+    {
+        for (int i = 0; i < waters.Length; i++)
+        {
+            if (waters[i] == TypeWater.NONE)
+            {
+                return i;
+            }
+        }
+        return waters.Length;
+    }
+
+    //Kiểm tra lọ đã đầy hay chưa
+    public bool IsFull()
+    {
+        if (GetIDTopWater() < waters.Length - 1)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    //Kiểm tra lọ có phải là lọ rỗng
+    public bool IsEmpty()
+    {
+        if (GetIDTopEmpty() == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public Vector2 GetPos() => transform.position;
+
+    public Vector2 GetPosTarget() => _posTarget.position;
+
+    public float GetScaleX() => transform.localScale.x;
+
+    public Vector2 GetPosBottom() => _posBottom.position;
+
+    public TypeWater GetTopType()
+    {
+        throw new NotImplementedException();
     }
 
     void Init()
@@ -130,61 +158,17 @@ public class Bottle : MonoBehaviour
 
     public int ReceivableAmount()
     {
-        if (IsNull()) return waters.Length;
+        if (IsEmpty()) return waters.Length;
 
-        int idTop = GetIDNoWater();
+        int idTop = GetIDTopEmpty();
         return waters.Length - idTop;
     }
 
+    //Cập nhật pos và scale của mask 
     void UpdateMat()
     {
         _waterMat.SetVector("_PosWorld", _mask.position);
         _waterMat.SetVector("_ObjectScale", transform.localScale);
-    }
-
-    public void FlipPivot(bool isPlaceLeft)
-    {
-        if (isPlaceLeft)
-        {
-            if (GetScaleX() > 0)
-            {
-                float newPosX = transform.position.x + 0.5f;
-                transform.position = new Vector2(newPosX, transform.localPosition.y);
-                transform.localScale = new Vector3(-1, 1, 1);
-                _bottleOut.localScale = new Vector3(-1, 1, 1);
-            }
-        }
-        else
-        {
-            if (GetScaleX() < 0)
-            {
-                transform.localScale = new Vector3(1, 1, 1);
-                _bottleOut.localScale = new Vector3(1, 1, 1);
-                transform.localPosition = new Vector2(transform.localPosition.x - 0.5f, transform.localPosition.y);
-            }
-        }
-
-    }
-
-    public void ResetFlip(bool isPlaceLeft)
-    {
-        transform.localScale = Vector3.one;
-        _bottleOut.localScale = new Vector3(1, 1, 1);
-
-        if (isPlaceLeft)
-        {
-            if (GetScaleX() > 0)
-            {
-                transform.localPosition = new Vector2(transform.localPosition.x - 0.5f, transform.localPosition.y);
-            }
-        }
-        else
-        {
-            if (GetScaleX() < 0)
-            {
-                transform.localPosition = new Vector2(transform.localPosition.x + 0.5f, transform.localPosition.y);
-            }
-        }
     }
 
     public bool IsBottleComplete()
@@ -250,13 +234,13 @@ public class Bottle : MonoBehaviour
 
     public void SetCurFillWater()
     {
-        idCurFill = GetIDNoWater();
+        idCurFill = GetIDTopEmpty();
         _waterMat.SetFloat("_FillAmount", data.thresholdFills[idCurFill]);
     }
 
     public void ReFill(int numReFill, float time, TypeWater type, Action actionDone)
     {
-        if (IsNull())
+        if (IsEmpty())
         {
             _bottleIn.gameObject.SetActive(true);
         }
@@ -294,7 +278,7 @@ public class Bottle : MonoBehaviour
             {
                 idCurFill = curFill;
                 _waterMat.SetFloat("_FillAmount", data.thresholdFills[idCurFill]);
-                if (IsNull())
+                if (IsEmpty())
                 {
                     _bottleIn.gameObject.SetActive(false);
                 }
@@ -348,66 +332,50 @@ public class Bottle : MonoBehaviour
         s.SetEase(Ease.Linear);
     }
 
-    public int GetIDTopWater()
+    public void FlipPivot(bool isPlaceLeft)
     {
-        for (int i = waters.Length - 1; i >= 0; i--)
+        if (isPlaceLeft)
         {
-            if (waters[i] != TypeWater.NONE)
+            if (GetScaleX() > 0)
             {
-                return i;
+                float newPosX = transform.position.x + 0.5f;
+                transform.position = new Vector2(newPosX, transform.localPosition.y);
+                transform.localScale = new Vector3(-1, 1, 1);
+                _bottleOut.localScale = new Vector3(-1, 1, 1);
             }
         }
-        //for (int i = 0; i < waters.Length; i++)
-        //{
-        //    if (waters[i] == TypeWater.NONE)
-        //    {
-        //        if (i == 0) return -1;
-        //        else return i - 1;
-        //    }
-        //}
-        //return waters.Length - 1;
-        return -1;
-    }
-
-    public int GetIDNoWater()
-    {
-        for (int i = 0; i < waters.Length; i++)
+        else
         {
-            if (waters[i] == TypeWater.NONE)
+            if (GetScaleX() < 0)
             {
-                return i;
+                transform.localScale = new Vector3(1, 1, 1);
+                _bottleOut.localScale = new Vector3(1, 1, 1);
+                transform.localPosition = new Vector2(transform.localPosition.x - 0.5f, transform.localPosition.y);
             }
         }
-        return waters.Length;
+
     }
 
-    //Kiểm tra lọ đã đầy hay chưa
-    public bool IsFull()
+    public void ResetFlip(bool isPlaceLeft)
     {
-        if (GetIDTopWater() < waters.Length - 1)
+        transform.localScale = Vector3.one;
+        _bottleOut.localScale = new Vector3(1, 1, 1);
+
+        if (isPlaceLeft)
         {
-            return false;
+            if (GetScaleX() > 0)
+            {
+                transform.localPosition = new Vector2(transform.localPosition.x - 0.5f, transform.localPosition.y);
+            }
         }
-        return true;
-    }
-
-    //Kiểm tra lọ có phải là lọ rỗng
-    public bool IsNull()
-    {
-        if (GetIDNoWater() == 0)
+        else
         {
-            return true;
+            if (GetScaleX() < 0)
+            {
+                transform.localPosition = new Vector2(transform.localPosition.x + 0.5f, transform.localPosition.y);
+            }
         }
-        return false;
     }
-
-    public Vector2 GetPos() => transform.position;
-
-    public Vector2 GetPosTarget() => _posTarget.position;
-
-    public float GetScaleX() => transform.localScale.x;
-
-    public Vector2 GetPosBottom() => _posBottom.position;
 }
 
 public enum TypeWater {

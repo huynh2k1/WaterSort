@@ -159,7 +159,7 @@ public class LevelEditorCtrl : MonoBehaviour
         List<Bottle> temp = new List<Bottle>();
         foreach(Bottle b in listBottle)
         {
-            if(b.IsNull() == false)
+            if(b.IsEmpty() == false)
             {
                 temp.Add(b);
             }

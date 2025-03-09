@@ -6,9 +6,9 @@ using Unity.VisualScripting;
 using static UnityEditor.PlayerSettings;
 using DG.Tweening;
 
-public class BottleCtrl : MonoBehaviour
+public class InputCtrl : MonoBehaviour
 {
-    public static BottleCtrl I;
+    public static InputCtrl I;
 
     public BottleSO bottleSO;
     public Bottle bottlePrefab;
@@ -42,13 +42,33 @@ public class BottleCtrl : MonoBehaviour
         LoadData();
     }
 
+    public void SelectBottle(Bottle bottle)
+    {
+        if(b1 == null)
+        {
+            if (bottle.IsEmpty())
+                return;
+            b1 = bottle;
+        }
+        else if(b2 == null)
+        {
+            if(b1 == bottle)
+                b1 = null;
+            else if (!bottle.IsFull())
+            {
+                b2 = bottle;
+                B1ToB2();
+            }
+        }
+    }
+
     public void B1ToB2()
     {
         //Check xem có cùng màu nước trên cùng
         TypeWater t1 = b1.waters[b1.GetIDTopWater()];
         TypeWater t2 = TypeWater.NONE;
 
-        if(b2.IsNull() == false)
+        if(b2.IsEmpty() == false)
             t2 = b2.waters[b2.GetIDTopWater()];
 
         if (t2 != TypeWater.NONE && t1 != t2)
