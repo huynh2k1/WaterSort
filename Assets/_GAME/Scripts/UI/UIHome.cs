@@ -1,27 +1,43 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class UIHome : BaseUI
 {
-    public Button btnPlay, btnSetting;
+    private Dictionary<Button, UnityAction> buttonActions;
+    public Button btnPlay;
 
     private void Awake()
     {
-        AssignOnClick(btnPlay, OnClickPlay);
-        AssignOnClick(btnSetting, OnClickSetting);
+        buttonActions = new Dictionary<Button, UnityAction>
+        {
+            { btnPlay, OnClickPlay},
+        };
+
+        foreach(var obj in buttonActions)
+        {
+            AssignOnClick(obj.Key, obj.Value);
+
+        }
     }
 
     void AssignOnClick(Button btn, UnityAction action)
     {
-        btn.onClick.AddListener(action);
+        if (btn != null)
+        {
+            btn.onClick.AddListener(action);
+        }
+        else
+        {
+            Debug.LogError($"Button chưa được gán trong Inspector: {action.Method.Name}");
+        }
     }
 
     void OnClickPlay()
     {
-        Hide();
-        UICtrl.I.ShowUIGame(true);
+        UICtrl.I.ShowUIGame();
         GameCtrl.I.GameStart();
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -5,13 +6,20 @@ using UnityEngine.UI;
 
 public class UIGame : BaseUI
 {
-    public Button btnHome, btnSetting;
+    private Dictionary<Button, UnityAction> buttonActions;
+    public Button btnHome;
     public TMP_Text txtLevel;
 
     private void Awake()
     {
-        AssignOnClick(btnHome, OnClickHome);
-        AssignOnClick(btnSetting, OnClickSetting);
+        buttonActions = new Dictionary<Button, UnityAction>
+        {
+            { btnHome, OnClickHome},
+        };
+        foreach(var btn in buttonActions)
+        {
+            AssignOnClick(btn.Key, btn.Value);
+        }
     }
 
     private void OnEnable()
@@ -26,8 +34,7 @@ public class UIGame : BaseUI
 
     void OnClickHome()
     {
-        Hide();
-        UICtrl.I.ShowUIHome(true);
+        UICtrl.I.ShowUIHome();
     }
 
     void OnClickSetting()

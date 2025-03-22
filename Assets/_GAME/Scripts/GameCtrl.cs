@@ -10,7 +10,7 @@ public class GameCtrl : BaseGameCtrl
 
     private void Awake()
     {
-        if(I = null)
+        if(I == null)
         {
             I = this;
         }
@@ -44,8 +44,6 @@ public class GameCtrl : BaseGameCtrl
     {
         ChangeState(StateGame.PLAYING);
         OnGameStart?.Invoke();
-        //BottleCtrl.I.DisableBottles();
-        //BottleCtrl.I.Init();
     }
 
     public override void GamePause(bool isPause)

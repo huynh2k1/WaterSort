@@ -1,11 +1,14 @@
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
+using System;
 
 public class UICtrl : MonoBehaviour
 {
     public static UICtrl I;
-    public UIHome uiHome;
-    public UIGame uiGame;
-
+    [SerializeField] UIHome uiHome;
+    [SerializeField] UIGame uiGame;
+    [SerializeField] Image _mask;
     private void Awake()
     {
         I = this;
@@ -17,7 +20,25 @@ public class UICtrl : MonoBehaviour
         ShowUIGame(false);
     }
 
-    public void ShowUIHome(bool isShow)
+    public void ShowUIHome()
+    {
+        FadeMask(() =>
+        {
+            ShowUIHome(true);
+            ShowUIGame(false);
+        });
+    }
+
+    public void ShowUIGame()
+    {
+        FadeMask(() =>
+        {
+            ShowUIHome(false);
+            ShowUIGame(true);
+        });
+    }
+
+    void ShowUIHome(bool isShow)
     {
         if (isShow)
         {
@@ -29,7 +50,7 @@ public class UICtrl : MonoBehaviour
         }
     }
 
-    public void ShowUIGame(bool isShow)
+    void ShowUIGame(bool isShow)
     {
         if (isShow)
         {
@@ -41,4 +62,16 @@ public class UICtrl : MonoBehaviour
         }
     }
 
+    public void FadeMask(Action action = default)
+    {
+        _mask.raycastTarget = false;
+        TweenUtils.FadeImage(_mask, 0, 1, 0.2f, Ease.Linear, () =>
+        {
+            action?.Invoke();
+            TweenUtils.FadeImage(_mask, 1, 0, 0.2f, Ease.Linear, () =>
+            {
+                _mask.raycastTarget = true;
+            });
+        });
+    }
 }
