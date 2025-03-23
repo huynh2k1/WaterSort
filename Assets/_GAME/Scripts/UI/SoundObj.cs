@@ -7,7 +7,7 @@ public class SoundObj : MonoBehaviour
     public TypeSetting type;
     public Button btnSound;
     public GameObject on, off;
-    public TMP_Text txtTitle;
+    //public TMP_Text txtTitle;
     public bool isOn;
     string _title;
 
@@ -15,7 +15,7 @@ public class SoundObj : MonoBehaviour
     private void Awake()
     {
         btnSound.onClick.AddListener(OnClickThis);
-        UpdateTextByType();
+        //UpdateTextByType();
     }
 
     private void OnEnable()
@@ -70,22 +70,22 @@ public class SoundObj : MonoBehaviour
         off.SetActive(!isOn);
     }
 
-    void UpdateTextByType()
-    {
-        switch (type)
-        {
-            case TypeSetting.SOUND:
-                _title = "SOUND";
-                break;
-            case TypeSetting.MUSIC:
-                _title = "MUSIC";
-                break;
-            case TypeSetting.VIBRATE:
-                _title = "VIBRATE";
-                break;
-        }
-        txtTitle.text = _title;
-    }
+    //void UpdateTextByType()
+    //{
+    //    switch (type)
+    //    {
+    //        case TypeSetting.SOUND:
+    //            _title = "SOUND";
+    //            break;
+    //        case TypeSetting.MUSIC:
+    //            _title = "MUSIC";
+    //            break;
+    //        case TypeSetting.VIBRATE:
+    //            _title = "VIBRATE";
+    //            break;
+    //    }
+    //    //txtTitle.text = _title;
+    //}
 
     public enum TypeSetting { SOUND, MUSIC, VIBRATE}   
 }

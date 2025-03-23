@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -57,6 +58,23 @@ public class SoundCtrl : MonoBehaviour
         }
     }
 
+    public void PlaySoundByTime(TypeSound type, float volume, float time)
+    {
+        if (PrefData.Sound == false)
+            return;
+        var source = queue_sources.Dequeue();
+        if (source == null)
+            return;
+        AudioClip clip = dataSound.GetSound(type);
+        source.volume = volume;
+        source.PlayOneShot(clip);
+        queue_sources.Enqueue(source);
+        DOVirtual.DelayedCall(time, () =>
+        {
+            source.Stop();
+        });
+    }
+
     public void PlaySound(TypeSound type, float volume = 0.7f)
     {
         if (PrefData.Sound == false)
@@ -88,5 +106,6 @@ public enum TypeSound
     CLICK,
     WIN,
     LOSE,
-    BOTTLECOMPLETE
+    BOTTLECOMPLETE,
+    POURBOTTLE
 }

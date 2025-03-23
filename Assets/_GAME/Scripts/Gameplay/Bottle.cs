@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Bottle : MonoBehaviour, IBottle
 {
@@ -24,7 +25,7 @@ public class Bottle : MonoBehaviour, IBottle
 
     [Header("PROPERTIES")]
     public int idCurFill;
-    Vector3 _initPos;
+    public Vector3 initPos { get; set; }
     float _scaleOffset = 1f;
     float _curScale;
     bool _canClick = true;
@@ -46,6 +47,19 @@ public class Bottle : MonoBehaviour, IBottle
 
         if (!_canClick) return;
         InputCtrl.I.SelectBottle(this);
+    }
+
+    public void Selected(bool isSelected)
+    {
+        if (isSelected)
+        {
+            float targetY = transform.position.y + 0.5f;
+            TweenUtils.MoveY(transform, targetY, 0.2f, Ease.Linear);
+        }
+        else
+        {
+            TweenUtils.Move(transform, initPos, 0.2f, Ease.Linear);
+        }
     }
 
     public int GetIDTopWater()
@@ -111,7 +125,6 @@ public class Bottle : MonoBehaviour, IBottle
         {
             _waterMat = _bottleIn.material;
         }
-        _initPos = transform.position;
     }
 
     public void LoadData(TypeWater[] data)
@@ -295,16 +308,28 @@ public class Bottle : MonoBehaviour, IBottle
         //Insert(float time, Tween t): Chèn tween vào một thời điểm cụ thể trong sequence.
         //SetLoops(int count): Lặp lại sequence (số âm để lặp vô hạn).
         //SetEase(Ease.Linear): Thiết lập kiểu easing.
-        _initPos = transform.position;
+        //_initPos = transform.position;
         float timeMove = 0.5f;
         Vector3 angleTarget = data.rotateFills[idCurFill];
         Vector3 angleFill = data.rotateFills[idRotate];
         float scale1 = data.scaleOffsets[idCurFill];
         float scale2 = data.scaleOffsets[idRotate];
+        
         if (GetPos().x < target.GetPos().x)
         {
             angleTarget = -angleTarget;
             angleFill = -angleFill;
+        }
+
+        if (GetPos().x < target.GetPos().x)
+        {
+            //b1 nằm bên trái
+            FlipPivot(true);
+        }
+        else
+        {
+            //b1 nằm bên phải
+            FlipPivot(false);
         }
 
         //Xoay + Di chuyển b1 -> b2
@@ -316,14 +341,27 @@ public class Bottle : MonoBehaviour, IBottle
         s.Join(transform.DORotate(angleTarget, timeMove).OnComplete(() => action1?.Invoke()));
 
         //Bắt đầu đổ
-        s.Append(transform.DORotate(angleFill, timeFill));
+        SoundCtrl.I.PlaySoundByTime(TypeSound.POURBOTTLE, 0.7f,timeFill);
+        s.Append(transform.DORotate(angleFill, timeFill).OnComplete(() =>
+        {
+            if (GetPos().x < target.GetPos().x)
+            {
+                //b1 nằm bên trái
+                ResetFlip(true);
+            }
+            else
+            {
+                //b1 nằm bên phải
+                ResetFlip(false);
+            }
+        }));
         s.Join(DOTween.To(() => _curScale, x => _scaleOffset = x, scale2, timeFill).OnUpdate(() =>
         {
             _waterMat.SetFloat("_ScaleOffset", _scaleOffset);
         }));
 
 
-        s.Append(transform.DOMove(_initPos, timeMove).OnComplete(() => action2?.Invoke()));
+        s.Append(transform.DOMove(initPos, timeMove).OnComplete(() => action2?.Invoke()));
         s.Join(DOTween.To(() => _scaleOffset, x => _scaleOffset = x, 1f, timeMove).OnUpdate(() =>
         {
             _waterMat.SetFloat("_ScaleOffset", _scaleOffset);
